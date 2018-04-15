@@ -11,7 +11,12 @@ import Alamofire
 import CoreData
 
 
-extension UIViewController {
+var isSecondScreenNeeded: Bool = true
+
+
+
+extension UIViewController
+{
     func sizeClass() -> (UIUserInterfaceSizeClass, UIUserInterfaceSizeClass) {
         return (self.traitCollection.horizontalSizeClass, self.traitCollection.verticalSizeClass)
     }
@@ -20,13 +25,17 @@ extension UIViewController {
 class FirstScreen: UIViewController, UITableViewDelegate, UITableViewDataSource
 {
     
-
+    @IBOutlet var profilePicture: UIImageView!
     
+    @IBOutlet var name: UILabel!
     
+    @IBOutlet var location: UILabel!
     
+    @IBOutlet var goldBadges: UILabel!
     
+    @IBOutlet var silverBadges: UILabel!
     
-    
+    @IBOutlet var bronzeBadges: UILabel!
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
     {
@@ -47,12 +56,41 @@ class FirstScreen: UIViewController, UITableViewDelegate, UITableViewDataSource
         return cell
     }
     
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
     {
-        performSegue(withIdentifier: "segueOne", sender: DevelopersList[indexPath.row])
+        if(isSecondScreenNeeded)
+        {
+            performSegue(withIdentifier: "segueOne", sender: DevelopersList[indexPath.row])
+        }
+        else
+        {
+            profilePicture.image = DevelopersList[indexPath.row].image
+            name.text = DevelopersList[indexPath.row].name
+            location.text = "Location: " + DevelopersList[indexPath.row].location
+            goldBadges.text = "Gold Badges: " + String(DevelopersList[indexPath.row].goldenBadges)
+            silverBadges.text = "Silver Badges: " + String(DevelopersList[indexPath.row].silverBadges)
+            bronzeBadges.text = "Bronze Badges: " + String(DevelopersList[indexPath.row].bronzeBadges)
+           
+        }
+        
+        
     }
     
 
+    func setUpUI()
+    {
+        if(!isSecondScreenNeeded)
+        {
+            name.text = ""
+            location.text = ""
+            goldBadges.text = ""
+            silverBadges.text = ""
+            bronzeBadges.text = ""
+        }
+        
+        
+    }
     
    
     
@@ -95,13 +133,40 @@ class FirstScreen: UIViewController, UITableViewDelegate, UITableViewDataSource
     }
 
    
+    
     override func viewDidLoad()
     {
         
+        
    
+        switch self.sizeClass()
+        {
+        case (UIUserInterfaceSizeClass.unspecified, UIUserInterfaceSizeClass.unspecified):
+            print("Unknown")
+        case (UIUserInterfaceSizeClass.unspecified, UIUserInterfaceSizeClass.compact):
+            print("Unknown width, compact height")
+        case (UIUserInterfaceSizeClass.unspecified, UIUserInterfaceSizeClass.regular):
+            print("Unknown width, regular height")
+        case (UIUserInterfaceSizeClass.compact, UIUserInterfaceSizeClass.unspecified):
+            print("Compact width, unknown height")
+        case (UIUserInterfaceSizeClass.regular, UIUserInterfaceSizeClass.unspecified):
+            print("Regular width, unknown height")
+        case (UIUserInterfaceSizeClass.regular, UIUserInterfaceSizeClass.compact):
+            print("Regular width, compact height")
+        case (UIUserInterfaceSizeClass.compact, UIUserInterfaceSizeClass.compact):
+            print("Compact width, compact height")
+        case (UIUserInterfaceSizeClass.regular, UIUserInterfaceSizeClass.regular):
         
+            print("Regualr width, regular height")
+            isSecondScreenNeeded = false
+            
         
-
+            
+        case (UIUserInterfaceSizeClass.compact, UIUserInterfaceSizeClass.regular):
+            print("Compact width, regular height")
+        }
+        
+        setUpUI()
         
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
